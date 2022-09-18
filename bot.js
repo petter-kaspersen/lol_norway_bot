@@ -4,12 +4,15 @@ const fs = require("fs");
 const RoleSelection = require("./helpers/role-selection");
 
 const { Client, GatewayIntentBits, Partials } = require("discord.js");
+const GamerArticles = require("./helpers/gamer-articles");
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.DirectMessages
   ],
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
@@ -36,5 +39,6 @@ client.on("ready", () => {
 });
 
 new RoleSelection(client);
+new GamerArticles(client);
 
 client.login(process.env.DISCORD_BOT_TOKEN);
