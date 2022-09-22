@@ -20,6 +20,8 @@ const SUPPORT_ICON_ID = process.env.SUP_ICON_ID || "";
 class RoleSelection extends Helper {
   constructor(bot: Client) {
     super(bot);
+
+    this.init();
   }
 
   async init() {
@@ -65,6 +67,7 @@ class RoleSelection extends Helper {
   ) {
     if (user.bot) return;
 
+    console.log("BEEP");
     try {
       if (reaction.partial) {
         try {

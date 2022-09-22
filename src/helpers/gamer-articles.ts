@@ -23,6 +23,8 @@ export default class GamerArticles extends Helper {
     "https://www.gamer.no/rss/subject/league-of-legends";
   constructor(bot: Client) {
     super(bot);
+
+    this.init();
   }
 
   async init() {
