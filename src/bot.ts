@@ -4,28 +4,57 @@ import { Client, GatewayIntentBits, Partials } from "discord.js";
 import Logger from "./util/logger";
 import RoleSelection from "./helpers/role-selection";
 import GamerArticles from "./helpers/gamer-articles";
+import Command from "./commands/command";
+import CommandStats from "./commands/stats";
 
 const IS_DEV = process.env.DEV === "true" ? true : false;
 const DISCORD_TOKEN = IS_DEV
   ? process.env.DISCORD_BOT_DEV_TOKEN
   : process.env.DISCORD_BOT_TOKEN;
 
-const client: Client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.DirectMessages,
-  ],
-  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
-});
+class Bot {
+  private client: Client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits.DirectMessages,
+    ],
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+  });
 
-client.on("ready", () => {
-  Logger.Info("Bot online");
-});
+  private commands: Command[] = [];
 
-new RoleSelection(client);
-new GamerArticles(client);
+  constructor() {
+    this.addListeners();
+  }
 
-client.login(DISCORD_TOKEN ?? "");
+  addListeners() {
+    this.client.on("ready", () => {
+      Logger.Info("Bot online");
+
+      this.addHelpers();
+      this.registerCommands();
+    });
+  }
+
+  addHelpers() {
+    new RoleSelection(this.client);
+    new GamerArticles(this.client);
+  }
+
+  registerCommands() {
+    this.commands.push(new CommandStats(this.client));
+  }
+
+  start() {
+    this.client.login(DISCORD_TOKEN ?? "");
+  }
+}
+
+// Initialize commands
+
+const bot = new Bot();
+
+bot.start();
