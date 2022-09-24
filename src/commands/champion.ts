@@ -92,7 +92,7 @@ export default class CommandChampion extends Command {
 
       let emoji = getEmojiForIndex(i);
 
-      returnString += `${emoji} ${player.displayName} | ${player.winrate} | ${player.games} games\n`;
+      returnString += `${emoji} ${player.displayName} | ${player.winrate}% | ${player.games} games\n`;
     }
 
     return returnString;
