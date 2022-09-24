@@ -83,7 +83,7 @@ export default class CommandStats extends Command {
       .setColor("#d82e34")
       .setTitle(
         `Stats for ${stats[0].name} ${
-          role ? `in role ${this.getRoleIconByRole(role)}` : ""
+          role ? `in role ${role.toLowerCase()}` : ""
         }`
       )
       .addFields(
