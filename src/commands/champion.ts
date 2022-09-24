@@ -91,8 +91,8 @@ export default class CommandChampion extends Command {
 
     for (const player of stats) {
       if (!player) continue;
-      occurences[player.name] = occurences[player.name]
-        ? occurences[player.name] + 1
+      occurences[player.player_id] = occurences[player.player_id]
+        ? occurences[player.player_id] + 1
         : 1;
     }
 
@@ -102,15 +102,15 @@ export default class CommandChampion extends Command {
 
     const top: Player[] = [];
 
-    for (let [name, _] of sortedPlayers) {
-      top.push(this.getStatsForPlayer(name, stats));
+    for (let [pid, _] of sortedPlayers) {
+      top.push(this.getStatsForPlayer(pid, stats));
     }
 
     return top;
   }
 
-  getStatsForPlayer(name: string, stats: RawDBQueryResult[]): Player {
-    const gamesWithChampion = stats.filter((s) => s.name == name);
+  getStatsForPlayer(pid: string, stats: RawDBQueryResult[]): Player {
+    const gamesWithChampion = stats.filter((s) => s.player_id == pid);
 
     const wins = gamesWithChampion.filter((s) => s.side === s.winner).length;
     const losses = gamesWithChampion.length - wins;
@@ -118,7 +118,7 @@ export default class CommandChampion extends Command {
     const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
 
     return {
-      displayName: name,
+      displayName: gamesWithChampion[gamesWithChampion.length - 1].name,
       winrate: `${winrate}%`,
       games: gamesWithChampion.length,
     };
