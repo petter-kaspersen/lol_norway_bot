@@ -26,6 +26,8 @@ interface TopChampion {
   gamesWithChampion: number;
 }
 
+type Role = "TOP" | "JGL" | "MID" | "BOT" | "SUP";
+
 export default class CommandStats extends Command {
   constructor(bot: Client) {
     super(bot, "stats", "Displays stats for yourself or other user");
@@ -43,6 +45,17 @@ export default class CommandStats extends Command {
       userToFetch = message.mentions.users.first();
     }
 
+    const containsRole =
+      /\?stats (top|jgl|jungle|mid|bot|adc|support|sup)/gm.exec(
+        message.content.toLowerCase()
+      );
+
+    let role: Role | null = null;
+
+    if (containsRole) {
+      role = this.getRoleByInput(containsRole[1]);
+    }
+
     if (!userToFetch) {
       message.reply(
         `Something went wrong executing the command. Please try again.`
@@ -50,7 +63,7 @@ export default class CommandStats extends Command {
       return;
     }
 
-    const stats = await this.getStatsForUser(userToFetch as User);
+    const stats = await this.getStatsForUser(userToFetch as User, role);
 
     if (!stats) {
       message.reply(`No games played for user`);
@@ -82,7 +95,9 @@ export default class CommandStats extends Command {
         }
       )
       .addFields({
-        name: "Top 3 champs",
+        name: `Top 3 champs ${
+          role ? `in role ${this.getRoleIconByRole(role)}` : ""
+        }`,
         value: this.constructChampionString(topThree),
       });
 
@@ -210,10 +225,41 @@ export default class CommandStats extends Command {
     return top;
   }
 
+  getRoleByInput(input: string): Role | null {
+    // top|jungle|mid|bot|adc|support|sup
+
+    switch (input) {
+      case "top":
+        return "TOP";
+      case "jungle":
+      case "jgl":
+        return "JGL";
+      case "mid":
+        return "MID";
+      case "adc":
+      case "bot":
+        return "BOT";
+      case "sup":
+      case "support":
+        return "SUP";
+      default:
+        return null;
+    }
+  }
+
+  getRoleIconByRole(role: Role): string {
+    return process.env[`${role}_ICON_ID`] || "";
+  }
+
   // TODO: Make a general purpose function
-  async getStatsForUser(user: User): Promise<RawDBQueryResult[] | null> {
+  async getStatsForUser(
+    user: User,
+    role: Role | null
+  ): Promise<RawDBQueryResult[] | null> {
     const games = await db.raw(
-      `SELECT * FROM game_participant gp JOIN game g ON g.id = gp.game_id WHERE gp.player_id = ${user.id};`
+      `SELECT * FROM game_participant gp JOIN game g ON g.id = gp.game_id WHERE gp.player_id = ${
+        user.id
+      } ${role ? `AND gp.role = '${role}'` : ""};`
     );
 
     const rows = games.rows as RawDBQueryResult[];
