@@ -64,26 +64,7 @@ export default class CommandStats extends Command {
 
     const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
 
-    const lastRating = stats[stats.length - 1];
-
-    const mmr =
-      20 * (lastRating.trueskill_mu - 3 * lastRating.trueskill_sigma + 25);
-
-    const topThree = await this.topThreeChampions(stats);
-
-    let topThreeString = "";
-
-    for (let i of topThree.keys()) {
-      const champ = topThree[i];
-
-      let emoji = "";
-
-      if (i === 0) emoji = ":first_place: ";
-      if (i === 1) emoji = ":second_place: ";
-      if (i === 2) emoji = ":third_place: ";
-
-      topThreeString += `${emoji} ${champ.name} | ${champ.winrate} | ${champ.gamesWithChampion} games\n`;
-    }
+    const topThree = await this.topXChampions(3, stats);
 
     const embed = new EmbedBuilder()
       .setColor("#d82e34")
@@ -102,7 +83,7 @@ export default class CommandStats extends Command {
       )
       .addFields({
         name: "Top 3 champs",
-        value: topThreeString,
+        value: this.constructChampionString(topThree),
       });
 
     await message.channel.send({ embeds: [embed] });
@@ -128,39 +109,59 @@ export default class CommandStats extends Command {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10);
 
-    const top: TopChampion[] = [];
+    const topTen: TopChampion[] = [];
 
     for (let [cid, _] of sortedChamps) {
-      top.push(this.getStatsForChampion(cid, stats));
-    }
-
-    let top10String = "";
-
-    for (let i of top.keys()) {
-      const champ = top[i];
-
-      let emoji = "";
-
-      if (i === 0) emoji = ":first_place: ";
-      if (i === 1) emoji = ":second_place: ";
-      if (i === 2) emoji = ":third_place: ";
-      if (i === 3) emoji = ":four: ";
-      if (i === 4) emoji = ":five: ";
-      if (i === 5) emoji = ":six: ";
-      if (i === 6) emoji = ":seven: ";
-      if (i === 7) emoji = ":eight: ";
-      if (i === 8) emoji = ":nine: ";
-      if (i === 9) emoji = ":keycap_ten: ";
-
-      top10String += `${emoji} ${champ.name} | ${champ.winrate} | ${champ.gamesWithChampion} games\n`;
+      topTen.push(this.getStatsForChampion(cid, stats));
     }
 
     const embed = new EmbedBuilder().setColor("#d82e34").addFields({
       name: "Top 10 champions",
-      value: top10String,
+      value: this.constructChampionString(topTen),
     });
 
     message.channel.send({ embeds: [embed] });
+  }
+
+  constructChampionString(topChampions: TopChampion[]): string {
+    let returnString = "";
+
+    for (let i of topChampions.keys()) {
+      const champ = topChampions[i];
+
+      let emoji = this.getEmojiForIndex(i);
+
+      returnString += `${emoji} ${champ.name} | ${champ.winrate} | ${champ.gamesWithChampion} games\n`;
+    }
+
+    return returnString;
+  }
+
+  getEmojiForIndex(i: number): string {
+    switch (i) {
+      case 0:
+        return ":first_place: ";
+      case 1:
+        return ":second_place: ";
+      case 2:
+        return ":third_place: ";
+      case 3:
+        return ":four: ";
+      case 4:
+        return ":five: ";
+      case 5:
+        return ":six: ";
+      case 6:
+        return ":seven: ";
+      case 7:
+        return ":eight: ";
+      case 8:
+        return ":nine: ";
+      case 9:
+        return ":keycap_ten: ";
+      default:
+        return "";
+    }
   }
 
   getStatsForChampion(cid: string, stats: RawDBQueryResult[]): TopChampion {
@@ -182,7 +183,10 @@ export default class CommandStats extends Command {
     };
   }
 
-  async topThreeChampions(stats: RawDBQueryResult[]): Promise<TopChampion[]> {
+  async topXChampions(
+    i: number,
+    stats: RawDBQueryResult[]
+  ): Promise<TopChampion[]> {
     const champions = stats
       .filter((s) => s.champion_id)
       .map((s) => s.champion_id);
@@ -196,7 +200,7 @@ export default class CommandStats extends Command {
 
     const sortedChamps = Object.entries(occurences)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 3);
+      .slice(0, i);
 
     const top: TopChampion[] = [];
     for (let [cid, _] of sortedChamps) {
