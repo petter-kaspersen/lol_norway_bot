@@ -81,7 +81,11 @@ export default class CommandStats extends Command {
 
     const embed = new EmbedBuilder()
       .setColor("#d82e34")
-      .setTitle(`Stats for ${stats[0].name}`)
+      .setTitle(
+        `Stats for ${stats[0].name} ${
+          role ? `in role ${this.getRoleIconByRole(role)}` : ""
+        }`
+      )
       .addFields(
         {
           name: "Games",
@@ -95,9 +99,7 @@ export default class CommandStats extends Command {
         }
       )
       .addFields({
-        name: `Top 3 champs ${
-          role ? `in role ${this.getRoleIconByRole(role)}` : ""
-        }`,
+        name: `Top 3 champs`,
         value: this.constructChampionString(topThree),
       });
 
