@@ -24,11 +24,11 @@ interface RawDBQueryResult {
 interface Player {
   displayName: string;
   games: number;
-  winrate: string;
+  winrate: number;
 }
 
 interface ChampionStats {
-  winrate: string;
+  winrate: number;
   games: number;
 }
 
@@ -118,6 +118,8 @@ export default class CommandChampion extends Command {
       top.push(this.getStatsForPlayer(pid, stats));
     }
 
+    top.sort((a, b) => b.games - a.games || b.winrate - a.winrate);
+
     return top;
   }
 
@@ -131,7 +133,7 @@ export default class CommandChampion extends Command {
 
     return {
       displayName: gamesWithChampion[gamesWithChampion.length - 1].name,
-      winrate: `${winrate}%`,
+      winrate: Number(winrate),
       games: gamesWithChampion.length,
     };
   }
@@ -143,7 +145,7 @@ export default class CommandChampion extends Command {
     const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
 
     return {
-      winrate: winrate,
+      winrate: Number(winrate),
       games: stats.length,
     };
   }
