@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "keywords": [],
+  "scripts": {
+    "dev": "npx ts-node src/bot.ts"
+  },
   "author": "Petter Kaspersen (petter@kaspersen.dev)",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
+    "knex": "^2.3.0",
     "node-fetch": "^2.6.7",
+    "pg": "^8.8.0",
     "rss-parser": "^3.12.0"
   },
   "devDependencies": {
