@@ -5,7 +5,7 @@ import championsJson from "../../champions.json";
 
 import { db } from "../db/external";
 
-const championsJsonObject = Object.entries(championsJson);
+const championsJsonObject = Object.values(championsJson.data);
 
 interface RawDBQueryResult {
   game_id: number;
@@ -23,6 +23,7 @@ interface RawDBQueryResult {
 interface TopThreeChampions {
   name: string;
   winrate: string;
+  gamesWithChampion: number;
 }
 
 export default class CommandStats extends Command {
@@ -75,7 +76,7 @@ export default class CommandStats extends Command {
       if (i === 1) emoji = ":second_place: ";
       if (i === 2) emoji = ":third_place: ";
 
-      topThreeString += `${emoji} ${champ.name} | ${champ.winrate}\n`;
+      topThreeString += `${emoji} ${champ.name} | ${champ.winrate} | ${champ.gamesWithChampion} games\n`;
     }
 
     const embed = new EmbedBuilder()
@@ -136,6 +137,7 @@ export default class CommandStats extends Command {
         // @ts-ignore
         name: championsJsonObject.find((x) => x.key === cid)?.name || "",
         winrate: `${winrate}%`,
+        gamesWithChampion: gamesWithChampion.length,
       });
     }
 
