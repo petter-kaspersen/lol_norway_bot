@@ -4,6 +4,7 @@ import Command from "./command";
 import championsJson from "../../champions.json";
 
 import { db } from "../db/external";
+import getEmojiForIndex from "../util/get-emoji-for-index";
 
 const championsJsonObject = Object.values(championsJson.data);
 
@@ -146,39 +147,12 @@ export default class CommandStats extends Command {
     for (let i of topChampions.keys()) {
       const champ = topChampions[i];
 
-      let emoji = this.getEmojiForIndex(i);
+      let emoji = getEmojiForIndex(i);
 
       returnString += `${emoji} ${champ.name} | ${champ.winrate} | ${champ.gamesWithChampion} games\n`;
     }
 
     return returnString;
-  }
-
-  getEmojiForIndex(i: number): string {
-    switch (i) {
-      case 0:
-        return ":first_place: ";
-      case 1:
-        return ":second_place: ";
-      case 2:
-        return ":third_place: ";
-      case 3:
-        return ":four: ";
-      case 4:
-        return ":five: ";
-      case 5:
-        return ":six: ";
-      case 6:
-        return ":seven: ";
-      case 7:
-        return ":eight: ";
-      case 8:
-        return ":nine: ";
-      case 9:
-        return ":keycap_ten: ";
-      default:
-        return "";
-    }
   }
 
   getStatsForChampion(cid: string, stats: RawDBQueryResult[]): TopChampion {
