@@ -27,6 +27,11 @@ interface Player {
   winrate: string;
 }
 
+interface ChampionStats {
+  winrate: string;
+  games: number;
+}
+
 export default class CommandChampion extends Command {
   constructor(bot: Client) {
     super(bot, "champion", "Displays stats for selected champion");
@@ -42,7 +47,7 @@ export default class CommandChampion extends Command {
       return;
     }
 
-    const champName = champion.join("");
+    const champName = champion.join(" ");
 
     const validChampion = championsJsonObject.find(
       (champ) => champ.name.toLowerCase() === champName.toLowerCase()
@@ -63,11 +68,18 @@ export default class CommandChampion extends Command {
     }
 
     const topTen = await this.getTopTenPlayers(gamesWithChampion);
+    const totalWinrate = await this.getTotalStats(gamesWithChampion);
 
-    const embed = new EmbedBuilder().setColor("#d82e34").addFields({
-      name: `Top ${topTen.length} players with ${validChampion.name}`,
-      value: this.constructChampionString(topTen),
-    });
+    const embed = new EmbedBuilder()
+      .setColor("#d82e34")
+      .addFields({
+        name: `Top ${topTen.length} players with ${validChampion.name}`,
+        value: this.constructChampionString(topTen),
+      })
+      .addFields({
+        name: `Total winrate for ${validChampion.name}`,
+        value: `${totalWinrate.games} games, ${totalWinrate.winrate}% winrate`,
+      });
 
     message.channel.send({ embeds: [embed] });
   }
@@ -121,6 +133,18 @@ export default class CommandChampion extends Command {
       displayName: gamesWithChampion[gamesWithChampion.length - 1].name,
       winrate: `${winrate}%`,
       games: gamesWithChampion.length,
+    };
+  }
+
+  getTotalStats(stats: RawDBQueryResult[]): ChampionStats {
+    const wins = stats.filter((s) => s.side === s.winner).length;
+    const losses = stats.length - wins;
+
+    const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
+
+    return {
+      winrate: winrate,
+      games: stats.length,
     };
   }
 
