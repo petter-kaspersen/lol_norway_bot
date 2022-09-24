@@ -53,8 +53,6 @@ class Bot {
   }
 }
 
-// Initialize commands
-
 const bot = new Bot();
 
 bot.start();

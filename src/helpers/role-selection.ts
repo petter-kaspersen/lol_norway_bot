@@ -67,7 +67,6 @@ class RoleSelection extends Helper {
   ) {
     if (user.bot) return;
 
-    console.log("BEEP");
     try {
       if (reaction.partial) {
         try {

@@ -4,7 +4,7 @@ export default class Command {
   private bot: Client;
   public name: string;
   public description: string;
-  private prefix: string;
+  public prefix: string;
   constructor(bot: Client, name: string, description: string = "") {
     this.bot = bot;
     this.name = name;
