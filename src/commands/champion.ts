@@ -38,8 +38,6 @@ export default class CommandChampion extends Command {
   }
 
   async action(message: Message) {
-    // Parse the message to see if a valid champion name was given.
-
     const champion = message.content.split(" ").slice(1);
 
     if (!champion.length) {
@@ -49,9 +47,7 @@ export default class CommandChampion extends Command {
 
     const champName = champion.join(" ");
 
-    const validChampion = championsJsonObject.find(
-      (champ) => champ.name.toLowerCase() === champName.toLowerCase()
-    );
+    const validChampion = this.matchChampionName(champName);
 
     if (!validChampion) {
       message.channel.send(`${champName} is not a valid champion.`);
@@ -68,7 +64,7 @@ export default class CommandChampion extends Command {
     }
 
     const topTen = await this.getTopTenPlayers(gamesWithChampion);
-    const totalWinrate = await this.getTotalStats(gamesWithChampion);
+    const totalWinrate = this.getTotalStats(gamesWithChampion);
 
     const embed = new EmbedBuilder()
       .setColor("#d82e34")
@@ -82,6 +78,20 @@ export default class CommandChampion extends Command {
       });
 
     message.channel.send({ embeds: [embed] });
+  }
+
+  matchChampionName(name: string) {
+    let lowercase = name.toLowerCase();
+
+    if (lowercase === "renata") {
+      lowercase = "renata glasc";
+    }
+
+    return championsJsonObject.find(
+      (champ) =>
+        champ.name.toLowerCase() === lowercase ||
+        champ.name.toLowerCase().replace("'", "") === lowercase
+    );
   }
 
   constructChampionString(topPlayers: Player[]): string {
