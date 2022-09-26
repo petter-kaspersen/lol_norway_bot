@@ -22,6 +22,7 @@ interface PlayerGames {
   id: number;
   side: string;
   winner: string;
+  role: string;
 }
 
 interface ParsedTeamParticipant {
@@ -95,7 +96,7 @@ export default class CommandLiveGame extends Command {
         inline: true,
       },
       {
-        name: "Winrate",
+        name: "Winrate in role",
         value: parsedTeam.map((p) => p.winrate).join("\n"),
         inline: true,
       },
@@ -113,21 +114,25 @@ export default class CommandLiveGame extends Command {
           name: p.name,
 
           role: p.role,
-          ...(await this.getStatsForUser(p.player_id)),
+          ...(await this.getStatsForUser(p.player_id, p.role)),
         };
       });
 
     return await Promise.all(teamParticipants);
   }
 
-  async getStatsForUser(discordId: string) {
+  async getStatsForUser(discordId: string, role: string) {
     const games: { rows: PlayerGames[] } = await db.raw(
       `SELECT * FROM game_participant gp JOIN game g ON g.id = gp.game_id WHERE gp.player_id = ${discordId};`
     );
 
-    const lastThreeGames = games.rows.sort((a, b) => b.id - a.id);
+    const lastThreeGames = games.rows
+      .filter((x) => x.winner !== null)
+      .sort((a, b) => b.id - a.id);
 
-    const totalGames = games.rows.length;
+    const totalGames = games.rows
+      .filter((x) => x.role === role)
+      .filter((x) => x.winner !== null).length;
     const wins = games.rows.filter((g) => g.side === g.winner).length;
     const losses = totalGames - wins;
 
