@@ -59,28 +59,34 @@ export default class CommandLiveGame extends Command {
     // Dirty
     game = game as Game;
 
+    const blueTeam = await this.parseTeam("blue", game.participants);
+    const redTeam = await this.parseTeam("red", game.participants);
+
     const embed = new EmbedBuilder()
       .setColor("#d82e34")
       .setTitle(`Information for game ${game.id}`)
       .addFields({
-        name: "Blue team",
-        value: "\u200b",
+        name: `Blue team`,
+        value: `Average win % in current roles ${(
+          blueTeam.reduce((prev, curr) => prev + Number(curr.winrate), 0) / 5
+        ).toFixed(2)}%`,
       })
-      .addFields(await this.parseFieldsForTeam("blue", game.participants))
+      .addFields(await this.parseFieldsForTeam(blueTeam))
       .addFields({
-        name: "Red team",
-        value: "\u200b",
+        name: `Red team - `,
+        value: `Average win % in current roles ${(
+          redTeam.reduce((prev, curr) => prev + Number(curr.winrate), 0) / 5
+        ).toFixed(2)}%`,
       })
-      .addFields(await this.parseFieldsForTeam("red", game.participants));
+      .addFields(await this.parseFieldsForTeam(redTeam));
 
     message.channel.send({ embeds: [embed] });
   }
 
   async parseFieldsForTeam(
-    team: "blue" | "red",
-    participants: Participant[]
+    parsedTeam: ParsedTeamParticipant[]
   ): Promise<EmbedField[]> {
-    const parsedTeam = await this.parseTeam(team, participants);
+    /*  */
 
     return [
       {
@@ -97,7 +103,7 @@ export default class CommandLiveGame extends Command {
       },
       {
         name: "Winrate in role",
-        value: parsedTeam.map((p) => p.winrate).join("\n"),
+        value: parsedTeam.map((p) => `${p.winrate}%`).join("\n"),
         inline: true,
       },
     ];
@@ -126,24 +132,21 @@ export default class CommandLiveGame extends Command {
       `SELECT * FROM game_participant gp JOIN game g ON g.id = gp.game_id WHERE gp.player_id = ${discordId};`
     );
 
-    const lastThreeGames = games.rows
-      .filter((x) => x.winner !== null)
-      .sort((a, b) => b.id - a.id);
+    const gamesWithWinner = games.rows.filter((x) => x.winner !== null);
 
-    const totalGames = games.rows
-      .filter((x) => x.role === role)
-      .filter((x) => x.winner !== null).length;
+    const lastThreeGames = gamesWithWinner.sort((a, b) => b.id - a.id);
 
-    const wins = games.rows
+    const totalGames = gamesWithWinner.filter((x) => x.role === role).length;
+
+    const wins = gamesWithWinner
       .filter((g) => g.side === g.winner)
-      .filter((x) => x.role === role)
-      .filter((x) => x.winner !== null).length;
+      .filter((x) => x.role === role).length;
     const losses = totalGames - wins;
 
     const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
 
     return {
-      winrate: `${winrate}%`,
+      winrate: winrate,
       lastThreeGames: lastThreeGames
         .slice(0, 3)
         .map(
