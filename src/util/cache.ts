@@ -1,6 +1,7 @@
 import { existsSync, writeFileSync, readFileSync, copyFileSync } from "fs";
 
 import process from "process";
+import { Alias } from "../commands/alias";
 import Logger from "./logger";
 
 const CACHE_FILE_NAME = process.env.CACHE_FILE || "cache.json";
@@ -8,6 +9,7 @@ const CACHE_FILE_NAME = process.env.CACHE_FILE || "cache.json";
 export interface Cache {
   roleSelectionMessage?: string;
   gamerArticles?: string[];
+  alias?: Alias[];
 }
 
 export function writeToCachefile(key: keyof Cache, value: unknown) {
