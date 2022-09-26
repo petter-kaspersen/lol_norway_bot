@@ -133,7 +133,11 @@ export default class CommandLiveGame extends Command {
     const totalGames = games.rows
       .filter((x) => x.role === role)
       .filter((x) => x.winner !== null).length;
-    const wins = games.rows.filter((g) => g.side === g.winner).length;
+
+    const wins = games.rows
+      .filter((g) => g.side === g.winner)
+      .filter((x) => x.role === role)
+      .filter((x) => x.winner !== null).length;
     const losses = totalGames - wins;
 
     const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
