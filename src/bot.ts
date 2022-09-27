@@ -9,6 +9,7 @@ import CommandStats from "./commands/stats";
 import CommandChampion from "./commands/champion";
 import CommandLiveGame from "./commands/live";
 import CommandAlias from "./commands/alias";
+import CommandPerformance from "./commands/performance";
 
 const IS_DEV = process.env.DEV === "true" ? true : false;
 const DISCORD_TOKEN = IS_DEV
@@ -52,6 +53,7 @@ class Bot {
     this.commands.push(new CommandChampion(this.client));
     this.commands.push(new CommandLiveGame(this.client));
     this.commands.push(new CommandAlias(this.client));
+    this.commands.push(new CommandPerformance(this.client));
   }
 
   start() {
