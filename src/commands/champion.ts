@@ -32,6 +32,10 @@ interface ChampionStats {
   games: number;
 }
 
+interface PlayerWithRankScore extends Player {
+  rankScore: number;
+}
+
 export default class CommandChampion extends Command {
   constructor(bot: Client) {
     super(bot, "champion", "Displays stats for selected champion");
@@ -118,22 +122,25 @@ export default class CommandChampion extends Command {
         : 1;
     }
 
-    const sortedPlayers = Object.entries(occurences)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10);
+    const sortedPlayers = Object.entries(occurences).sort(
+      (a, b) => b[1] - a[1]
+    );
 
-    const top: Player[] = [];
+    const top: PlayerWithRankScore[] = [];
 
     for (let [pid, _] of sortedPlayers) {
       top.push(this.getStatsForPlayer(pid, stats));
     }
 
-    top.sort((a, b) => b.games - a.games || b.winrate - a.winrate);
+    top.sort((a, b) => b.rankScore - a.rankScore).slice(0, 10);
 
     return top;
   }
 
-  getStatsForPlayer(pid: string, stats: RawDBQueryResult[]): Player {
+  getStatsForPlayer(
+    pid: string,
+    stats: RawDBQueryResult[]
+  ): PlayerWithRankScore {
     const gamesWithChampion = stats.filter((s) => s.player_id == pid);
 
     const wins = gamesWithChampion.filter((s) => s.side === s.winner).length;
@@ -141,10 +148,15 @@ export default class CommandChampion extends Command {
 
     const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
 
+    // Set trial period to 10 games
+    const newPlayerBias = Math.max(0, 10 - gamesWithChampion.length);
+
     return {
       displayName: gamesWithChampion[gamesWithChampion.length - 1].name,
       winrate: Number(winrate),
       games: gamesWithChampion.length,
+      rankScore:
+        (wins + newPlayerBias) / (gamesWithChampion.length + 2 * newPlayerBias),
     };
   }
 
