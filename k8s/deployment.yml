@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lol-norway-bot-deployment
+  labels:
+    app: lol-norway-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lol-norway-bot
+  template:
+    metadata:
+      labels:
+        app: lol-norway-bot
+    spec:
+      containers:
+        - name: lol-norway-bot
+          image: lol-norway-bot:prod
+          imagePullPolicy: IfNotPresent
+          envFrom:
+          - configMapRef:
+              name: lol-norway-bot-configmap
+          - secretRef:
+              name: lol-norway-bot-secrets

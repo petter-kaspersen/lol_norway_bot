@@ -6,6 +6,4 @@ RUN npm install
 
 COPY . ./
 
-RUN npm run build
-
-CMD [ "node", "build/src/bot.js" ]
+CMD [ "npx", "ts-node", "src/bot.ts" ]
