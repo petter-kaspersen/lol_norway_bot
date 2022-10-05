@@ -2,10 +2,10 @@
   "name": "lol_norway_bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "keywords": [],
   "scripts": {
-    "dev": "npx ts-node src/bot.ts"
+    "dev": "npx ts-node src/bot.ts",
+    "build": "tsc --project tsconfig.json"
   },
   "author": "Petter Kaspersen (petter@kaspersen.dev)",
   "license": "ISC",
