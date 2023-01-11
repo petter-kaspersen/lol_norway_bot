@@ -2,14 +2,18 @@ import { existsSync, writeFileSync, readFileSync, copyFileSync } from "fs";
 
 import process from "process";
 import { Alias } from "../commands/alias";
+import { LeaderboardSummoner } from "../helpers/leaderboard";
 import Logger from "./logger";
 
 const CACHE_FILE_NAME = process.env.CACHE_FILE || "cache.json";
 
 export interface Cache {
   roleSelectionMessage?: string;
+  leaderboardMessage?: string;
+  summonerVerificationMessage?: string;
   gamerArticles?: string[];
   alias?: Alias[];
+  leaderboardSummoners?: LeaderboardSummoner[];
 }
 
 export function writeToCachefile(key: keyof Cache, value: unknown) {

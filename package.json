@@ -15,7 +15,8 @@
     "knex": "^2.3.0",
     "node-fetch": "^2.6.7",
     "pg": "^8.8.0",
-    "rss-parser": "^3.12.0"
+    "rss-parser": "^3.12.0",
+    "twisted": "^1.52.0"
   },
   "devDependencies": {
     "typescript": "^4.8.3"

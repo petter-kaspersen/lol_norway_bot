@@ -77,7 +77,6 @@ export default class CommandStats extends Command {
     const losses = gamesPlayed - wins;
 
     const winrate = ((wins / (wins + losses)) * 100).toFixed(2);
-
     const topThree = await this.topXChampions(3, stats);
 
     const embed = new EmbedBuilder()
