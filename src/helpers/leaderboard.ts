@@ -84,6 +84,8 @@ export default class Leaderboard extends Helper {
       this.reloadCacheFile();
     }
 
+    await this.updateSummoners();
+
     // Update summoner every 15 minutes, OR when added
     setInterval(async () => {
       this.updateSummoners();
@@ -121,12 +123,20 @@ export default class Leaderboard extends Helper {
           return -1;
         }
 
-        return (
-          calculatePrio(b.rank.tier as TIER, b.rank.division as DIVISION) +
-          b.rank.lp -
-          calculatePrio(a.rank.tier as TIER, a.rank.division as DIVISION) +
-          a.rank.lp
+        const aPrio = calculatePrio(
+          a.rank.tier as TIER,
+          a.rank.division as DIVISION
         );
+        const bPrio = calculatePrio(
+          b.rank.tier as TIER,
+          b.rank.division as DIVISION
+        );
+
+        if (aPrio === bPrio) {
+          return b.rank.lp - a.rank.lp;
+        }
+
+        return bPrio - aPrio;
       })
       .slice(0, 10);
 
