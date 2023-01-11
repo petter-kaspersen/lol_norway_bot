@@ -122,8 +122,10 @@ export default class Leaderboard extends Helper {
         }
 
         return (
-          calculatePrio(b.rank.tier as TIER, b.rank.division as DIVISION) -
-          calculatePrio(a.rank.tier as TIER, a.rank.division as DIVISION)
+          calculatePrio(b.rank.tier as TIER, b.rank.division as DIVISION) +
+          b.rank.lp -
+          calculatePrio(a.rank.tier as TIER, a.rank.division as DIVISION) +
+          a.rank.lp
         );
       })
       .slice(0, 10);
