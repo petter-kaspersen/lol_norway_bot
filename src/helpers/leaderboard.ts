@@ -177,9 +177,9 @@ export default class Leaderboard extends Helper {
         return s;
       }
 
-      if (s.rank) {
+      /* if (s.rank) {
         s.history.push({ ...s.rank, timestamp: Date.now() });
-      }
+      } */
 
       s.rank = {
         tier: soloRank.tier,
