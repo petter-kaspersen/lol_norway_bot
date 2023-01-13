@@ -138,7 +138,7 @@ export default class Leaderboard extends Helper {
 
         return bPrio - aPrio;
       })
-      .slice(0, 10);
+      .slice(0, 20);
 
     return new EmbedBuilder()
       .setColor("#ed7650")

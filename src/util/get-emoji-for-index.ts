@@ -21,6 +21,6 @@ export default function getEmojiForIndex(i: number): string {
     case 9:
       return ":keycap_ten: ";
     default:
-      return "";
+      return `${i + 1}. `;
   }
 }
