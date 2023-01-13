@@ -37,13 +37,13 @@ type DIVISION = "IV" | "III" | "II" | "I";
 
 const tierPrio = {
   IRON: 1,
-  BRONZE: 2,
-  SILVER: 3,
-  GOLD: 4,
-  PLATINUM: 5,
-  DIAMOND: 6,
-  MASTER: 7,
-  CHALLENGER: 8,
+  BRONZE: 5,
+  SILVER: 10,
+  GOLD: 15,
+  PLATINUM: 20,
+  DIAMOND: 25,
+  MASTER: 30,
+  CHALLENGER: 35,
 };
 
 const divisionPrio = {
