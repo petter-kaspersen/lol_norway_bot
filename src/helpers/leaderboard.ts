@@ -43,7 +43,8 @@ const tierPrio = {
   PLATINUM: 20,
   DIAMOND: 25,
   MASTER: 30,
-  CHALLENGER: 35,
+  GRANDMASTER: 35,
+  CHALLENGER: 40,
 };
 
 const divisionPrio = {
